@@ -23,16 +23,22 @@ namespace ClipboardScreenShotToFile
 
         private void HotkeyProc(HotkeyInfo hotkeyInfo)
         {
+            this.Hide();
+            var screenShotFileName = DateTime.Now.ToFileTime().ToString() + ".png";
             using (var bmp = ScreenShotToBitmap.Screenshot())
             {
                 // image processing
-                bmp.Save(DateTime.Now.ToFileTime().ToString() + ".png", System.Drawing.Imaging.ImageFormat.Png);
+                bmp.Save(screenShotFileName, System.Drawing.Imaging.ImageFormat.Png);
             }
+            screenShotLinkLabel.Text = screenShotFileName;
+            screenShotLinkLabel.Show();
+            this.Show();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             //register global hotkey 
+            screenShotLinkLabel.Hide();
             try
             {
                 ghk = new GlobalHotkey(Modifiers.Ctrl, Keys.Q, this, true);
@@ -47,6 +53,11 @@ namespace ClipboardScreenShotToFile
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             ghk.Dispose();
+        }
+
+        private void ScreenShotLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(this.screenShotLinkLabel.Text);
         }
     }
 }
